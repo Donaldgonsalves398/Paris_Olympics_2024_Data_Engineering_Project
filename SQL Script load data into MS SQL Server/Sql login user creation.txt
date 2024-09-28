@@ -1,0 +1,4 @@
+
+create login sqluser with password='abc123';
+
+create user sqluser for login sqluser;
