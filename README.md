@@ -36,3 +36,44 @@ The architecture of the project consists of the following components:
 
 ![image](https://github.com/user-attachments/assets/fe374c78-33b3-4b4a-a400-4c37a7a59790)
 
+## 1: Data Ingestion
+Data ingestion from the on-premises SQL server to Data Lake Gen 2 is accomplished via Azure Data Factory. The process involves:
+1.	Installation of Self-Hosted Integration Runtime.
+2.	Establishing a connection between Azure Data Factory and the local SQL Server.
+3.	Setting up a copy pipeline to transfer all tables from the local SQL server to the Azure Data Lake's "bronze" folder.
+
+
+ ![image](https://github.com/user-attachments/assets/28fc4fba-8b96-4ffb-a6a5-2bb4e705a34a)
+
+## 2: Data Transformation
+After ingesting data into the "bronze" folder, it is transformed following the medallion data lake architecture (bronze, silver, gold). Data transitions through bronze, silver, and ultimately gold, suitable for business reporting tools like Power BI.
+Azure Databricks, using PySpark, is used for these transformations. Data initially stored in parquet format in the "bronze" folder is converted to the delta format as it progresses to "silver" and "gold." This transformation is carried out through Databricks notebooks:
+1.	Mount the storage.
+2.	Transform data from "bronze" to "silver" layer.
+3.	Further transform data from "silver" to "gold" layer.
+
+
+Azure Data Factory is updated to execute the "bronze" to "silver" and "silver" to "gold" notebooks automatically with each pipeline run.
+
+![image](https://github.com/user-attachments/assets/ddba0249-5939-4a39-9586-780a64a12a0c)
+
+## 3: Data Loading:
+Data from the "gold" folder is loaded into the Business Intelligence reporting application, Power BI. Azure Synapse is used for this purpose. The steps involve:
+1.	Creating a link from Azure Storage (Gold Folder) to Azure Synapse.
+2.	Writing stored procedures to extract table information as a SQL view.
+3.	Storing views within a server-less SQL Database in Synapse.
+
+![image](https://github.com/user-attachments/assets/aca32e33-9eef-48c6-a5ab-29650b653cb4)
+
+## 4: Data Reporting
+Power BI connects directly to the cloud pipeline using DirectQuery to dynamically update the database. A Power BI report is developed to visualize Olympics dataset data, including Athletes, Medals, and Country.
+
+
+
+https://github.com/user-attachments/assets/5898f8e3-649d-4658-bec9-580ccb3a7f4e
+
+
+
+## 5: Conclusion
+The Olympic Data Analysis on Azure project demonstrates how to leverage Azure services for processing, analyzing, and visualizing large-scale data.
+
